@@ -174,6 +174,9 @@ int main(int argc, char** argv)
    printPerformanceResults(sim->atoms->nGlobal, sim->printRate);
    printPerformanceResultsYaml(yamlFile);
 
+   zmq_close(sim->sender);
+   zmq_ctx_destroy(context);
+
    destroySimulation(&sim);
    comdFree(validate);
    finalizeSubsystems();
