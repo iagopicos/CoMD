@@ -174,8 +174,9 @@ int main(int argc, char** argv)
    printPerformanceResults(sim->atoms->nGlobal, sim->printRate);
    printPerformanceResultsYaml(yamlFile);
 
+   printf("Terminating ZMQ context\n");
    zmq_close(sim->sender);
-   zmq_ctx_destroy(context);
+   zmq_ctx_term(context);
 
    destroySimulation(&sim);
    comdFree(validate);
