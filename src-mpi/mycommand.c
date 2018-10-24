@@ -44,8 +44,8 @@
 /// | \--temp       | -T          | 600           | initial temperature (K)
 /// | \--delta      | -r          | 0             | initial delta (Angstroms)
 ///
-/// Notes: 
-/// 
+/// Notes:
+///
 /// The negative value for the lattice parameter (such as the default
 /// value, -1) is interpreted as a flag to indicate that the lattice
 /// parameter should be set from the potential. All supplied potentials
@@ -64,7 +64,7 @@
 /// lattice the system will rapidly cool to 300K due to equipartition of
 /// energy.
 ///
-/// 
+///
 /// \subsection ssec_example_command_lines Examples
 ///
 /// All of the examples below assume:
@@ -76,10 +76,10 @@
 ///
 /// ------------------------------
 ///
-/// The canonical base simulation, is 
+/// The canonical base simulation, is
 ///
-///     $ mpirun -np 1 ../bin/CoMD-mpi 
-/// 
+///     $ mpirun -np 1 ../bin/CoMD-mpi
+///
 /// Or, if the code was built without MPI:
 ///
 ///     $ ../bin/CoMD-serial
@@ -90,7 +90,7 @@
 ///
 /// To run with the default (Adams) EAM potential, specify -e:
 ///
-///     $ ../bin/CoMD-mpi -e 
+///     $ ../bin/CoMD-mpi -e
 ///
 /// ------------------------------
 ///
@@ -98,22 +98,22 @@
 /// Cu01.eam.alloy. This potential uses much larger tables (10,000
 /// entries vs. 500 for the Adams potential).
 ///
-///     $ ../bin/CoMD-mpi -e -t setfl 
+///     $ ../bin/CoMD-mpi -e -t setfl
 ///
 /// ------------------------------
 ///
 /// Selecting the name of a setfl file without setting the appropriate
 /// potential type
 ///
-///     $ ../bin/CoMD-mpi -e -p Cu01.eam.alloy 
-/// 
+///     $ ../bin/CoMD-mpi -e -p Cu01.eam.alloy
+///
 /// will result in an error message:
 ///
 /// Only FCC Lattice type supported, not . Fatal Error.
-/// 
+///
 /// Instead use:
 ///
-///     $ ../bin/CoMD-mpi -e -t setfl -p Cu01.eam.alloy 
+///     $ ../bin/CoMD-mpi -e -t setfl -p Cu01.eam.alloy
 ///
 /// ------------------------------
 ///
@@ -122,7 +122,7 @@
 /// To change the lattice constant and run with an expanded or
 /// compressed lattice:
 ///
-///     $ ../bin/CoMD-mpi -l 3.5 
+///     $ ../bin/CoMD-mpi -l 3.5
 ///
 /// This can be useful to test that the potential is being correctly
 /// evaluated as a function of interatomic spacing (the cold
@@ -134,8 +134,8 @@
 ///
 /// Initialize with zero temperature (zero instantaneous particle
 /// velocity) but with a random displacements of the atoms (in this
-/// case the maximum displacement is 0.1 Angstrom along each axis).  
-/// 
+/// case the maximum displacement is 0.1 Angstrom along each axis).
+///
 ///      $ ../bin/CoMD-mpi --delta 0.1 -T 0
 ///
 /// Typical values of delta are in the range of 0.1 to 0.5 Angstroms.
@@ -158,9 +158,9 @@
 /// number of processors does not equal (i*j*k) the run will abort.
 /// Notice that spaces are optional between short form options and their
 /// arguments.
-/// 
+///
 ///     $ mpirun -np 8 ../bin/CoMD-mpi -i2 -j2 -k2
-/// 
+///
 /// ------------------------------
 ///
 /// Run a weak scaling example: the simulation is doubled in each
@@ -206,6 +206,9 @@ Command parseCommandLine(int argc, char** argv)
    cmd.lat = -1.0;
    cmd.temperature = 600.0;
    cmd.initialDelta = 0.0;
+   cmd.port = 9000;
+   cmd.portNum = 4;
+   strcpy(cmd.hostDir,  "hosts");
 
    int help=0;
    // add arguments for processing.  Please update the html documentation too!
@@ -226,18 +229,21 @@ Command parseCommandLine(int argc, char** argv)
    addArg("lat",        'l', 1, 'd',  &(cmd.lat),          0,             "lattice parameter (Angstroms)");
    addArg("temp",       'T', 1, 'd',  &(cmd.temperature),  0,             "initial temperature (K)");
    addArg("delta",      'r', 1, 'd',  &(cmd.initialDelta), 0,             "initial delta (Angstroms)");
+   addArg("portNum",    'P', 1, 'i',  &(cmd.portNum),      0,             "number of ports to use");
+   addArg("port",       's', 1, 'i',  &(cmd.port),         0,             "starting port number");
+   addArg("hostDir",    'H', 1, 's',  cmd.hostDir,   sizeof(cmd.hostDir), "host information directory");
 
    processArgs(argc,argv);
 
    // If user didn't set potName, set type dependent default.
-   if (strlen(cmd.potName) == 0) 
+   if (strlen(cmd.potName) == 0)
    {
       if (strcmp(cmd.potType, "setfl" ) == 0)
          strcpy(cmd.potName, "Cu01.eam.alloy");
       if (strcmp(cmd.potType, "funcfl") == 0)
          strcpy(cmd.potName, "Cu_u6.eam");
    }
-      
+
    if (help)
    {
       printArgs();
@@ -287,4 +293,3 @@ void printCmdYaml(FILE* file, Command* cmd)
    );
    fflush(file);
 }
-

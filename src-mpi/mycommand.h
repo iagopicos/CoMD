@@ -26,6 +26,9 @@ typedef struct CommandSt
    double lat;         //!< lattice constant (in Angstroms)
    double temperature; //!< simulation initial temperature (in Kelvin)
    double initialDelta; //!< magnitude of initial displacement from lattice (in Angstroms)
+   int portNum;
+   int port;
+   char hostDir[1024];
 } Command;
 
 /// Process command line arguments into an easy to handle structure.
