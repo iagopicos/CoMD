@@ -8,6 +8,8 @@
 #include "parallel.h"
 #include "performanceTimers.h"
 
+#include "zhelpers.h"
+
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
 static void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt);
 
@@ -33,7 +35,7 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt)
    for (int ii=0; ii<nSteps; ++ii)
    {
       startTimer(velocityTimer);
-      advanceVelocity(s, s->boxes->nLocalBoxes, 0.5*dt); 
+      advanceVelocity(s, s->boxes->nLocalBoxes, 0.5*dt);
       stopTimer(velocityTimer);
 
       startTimer(positionTimer);
@@ -49,7 +51,7 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt)
       stopTimer(computeForceTimer);
 
       startTimer(velocityTimer);
-      advanceVelocity(s, s->boxes->nLocalBoxes, 0.5*dt); 
+      advanceVelocity(s, s->boxes->nLocalBoxes, 0.5*dt);
       stopTimer(velocityTimer);
    }
 
@@ -88,7 +90,9 @@ void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt)
          s->atoms->r[iOff][0] += dt*s->atoms->p[iOff][0]*invMass;
          s->atoms->r[iOff][1] += dt*s->atoms->p[iOff][1]*invMass;
          s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
-	 printf("Tuple4(%i_%i %i %f %f %f)\n", getMyRank(), iStep + 1, iOff, s->atoms->r[iOff][0], s->atoms->r[iOff][1], s->atoms->r[iOff][2]);
+	 //printf("Tuple4(%i_%i %i %f %f %f)\n", getMyRank(), iStep + 1, iOff, s->atoms->r[iOff][0], s->atoms->r[iOff][1], s->atoms->r[iOff][2]);
+         sprintf(s->buffer, "%i_%i_%i %i_%f_%f_%f\n", getMyRank(), iStep + 1, iOff, s->atoms->r[iOff][0], s->atoms->r[iOff][1], s->atoms->r[iOff][2]);
+         s_send(s->sender, s->buffer);
       }
    }
 }
@@ -128,7 +132,7 @@ void kineticEnergy(SimFlat* s)
 ///
 /// - updateLinkCells: Since atoms have moved, some may be in the wrong
 ///   link cells.
-/// - haloExchange (atom version): Sends atom data to remote tasks. 
+/// - haloExchange (atom version): Sends atom data to remote tasks.
 /// - sort: Sort the atoms.
 ///
 /// \see updateLinkCells

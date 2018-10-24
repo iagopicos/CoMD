@@ -277,6 +277,9 @@ void printCmdYaml(FILE* file, Command* cmd)
            "  Time step: %g fs\n"
            "  Initial Temperature: %g K\n"
            "  Initial Delta: %g Angstroms\n"
+           "  Number of Ports: %d\n"
+           "  Initial Port Number: %d\n"
+           "  Hostname Directory: %s\n"
            "\n",
            cmd->doeam,
            cmd->potDir,
@@ -289,7 +292,10 @@ void printCmdYaml(FILE* file, Command* cmd)
            cmd->printRate,
            cmd->dt,
            cmd->temperature,
-           cmd->initialDelta
+           cmd->initialDelta,
+           cmd->portNum,
+           cmd->port,
+           cmd->hostDir
    );
    fflush(file);
 }
