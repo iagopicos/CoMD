@@ -9,7 +9,7 @@
 #include "performanceTimers.h"
 
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
-static void advancePosition(SimFlat* s, int nBoxes, real_t dt);
+static void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt);
 
 
 /// Advance the simulation time to t+dt using a leap frog method
@@ -28,7 +28,7 @@ static void advancePosition(SimFlat* s, int nBoxes, real_t dt);
 /// the next call.
 ///
 /// After nSteps the kinetic energy is computed for diagnostic output.
-double timestep(SimFlat* s, int nSteps, real_t dt)
+double timestep(SimFlat* s, int nSteps, int iStep, real_t dt)
 {
    for (int ii=0; ii<nSteps; ++ii)
    {
@@ -37,7 +37,7 @@ double timestep(SimFlat* s, int nSteps, real_t dt)
       stopTimer(velocityTimer);
 
       startTimer(positionTimer);
-      advancePosition(s, s->boxes->nLocalBoxes, dt);
+      advancePosition(s, s->boxes->nLocalBoxes, iStep, dt);
       stopTimer(positionTimer);
 
       startTimer(redistributeTimer);
@@ -77,7 +77,7 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
    }
 }
 
-void advancePosition(SimFlat* s, int nBoxes, real_t dt)
+void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt)
 {
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
@@ -88,6 +88,7 @@ void advancePosition(SimFlat* s, int nBoxes, real_t dt)
          s->atoms->r[iOff][0] += dt*s->atoms->p[iOff][0]*invMass;
          s->atoms->r[iOff][1] += dt*s->atoms->p[iOff][1]*invMass;
          s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
+	 printf("Tuple4(%i_%i %i %f %f %f)\n", getMyRank(), iStep + 1, iOff, s->atoms->r[iOff][0], s->atoms->r[iOff][1], s->atoms->r[iOff][2]);
       }
    }
 }

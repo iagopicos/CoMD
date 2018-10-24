@@ -109,6 +109,7 @@ int main(int argc, char** argv)
    const int nSteps = sim->nSteps;
    const int printRate = sim->printRate;
    int iStep = 0;
+   //printf("Rank: %i\n", getMyRank());
    profileStart(loopTimer);
    for (; iStep<nSteps;)
    {
@@ -119,7 +120,7 @@ int main(int argc, char** argv)
       printThings(sim, iStep, getElapsedTime(timestepTimer));
 
       startTimer(timestepTimer);
-      timestep(sim, printRate, sim->dt);
+      timestep(sim, printRate, iStep, sim->dt);
       stopTimer(timestepTimer);
 
       iStep += printRate;

@@ -6,7 +6,7 @@
 
 #include "CoMDTypes.h"
 
-double timestep(SimFlat* s, int n, real_t dt);
+double timestep(SimFlat* s, int n, int iStep, real_t dt);
 void computeForce(SimFlat* s);
 void kineticEnergy(SimFlat* s);
 
