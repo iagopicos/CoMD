@@ -210,6 +210,7 @@ SimFlat* initSimulation(Command cmd)
    sim->ePotential = 0.0;
    sim->eKinetic = 0.0;
    sim->atomExchange = NULL;
+   sim->rank = getMyRank();
 
    sim->pot = initPotential(cmd.doeam, cmd.potDir, cmd.potName, cmd.potType);
    real_t latticeConstant = cmd.lat;

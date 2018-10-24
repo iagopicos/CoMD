@@ -84,7 +84,7 @@ typedef struct SimFlatSt
 
    void* sender;
 
-   char buffer[2048];
+   int rank;
 
 } SimFlat;
 
