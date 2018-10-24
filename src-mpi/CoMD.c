@@ -131,6 +131,7 @@ int main(int argc, char** argv)
    //Init ZMQ
    void *context = zmq_ctx_new();
    sim->sender = zmq_socket(context, ZMQ_PUSH);
+   zmq_setsockopt(sim->sender, ZMQ_SNDHWM, &(cmd.hwm), sizeof(cmd.hwm));
    char connect[MAX_CHARS_KEY];
    sprintf(connect, "tcp://%s:%d", server, port);
    printf("%s\n", connect);

@@ -29,6 +29,7 @@ typedef struct CommandSt
    int portNum;
    int port;
    char hostDir[1024];
+   int hwm;
 } Command;
 
 /// Process command line arguments into an easy to handle structure.
