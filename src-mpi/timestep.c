@@ -57,7 +57,7 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt)
    }
 
    // ZeroMQ send ids and positions
-   int ts = (iStep + 1) * nSteps;
+   int ts = iStep + nSteps - 1;
    zmq_send(s->sender, (void *)&(s->rank), sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&ts, sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)s->atoms->r, MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3), 0);
