@@ -13,6 +13,9 @@
 #include <time.h>
 #include <math.h>
 
+#include <stdio.h>
+#include "parallel.h"
+
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
 static void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt);
 static long get_current_time_in_ms (void);
@@ -65,12 +68,38 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
    zmq_send(s->sender, (void *)&(s->rank), sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&ts, sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&time, sizeof(long), ZMQ_SNDMORE);
-   zmq_send(s->sender, (void *)s->atoms->r, MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3), 0);
+
+
+   //Prepare messages to send: the positions and the IDs
+   real3* buffer = calloc(MAXATOMS*s->boxes->nLocalBoxes,sizeof(real3) * 3);
+   int* idBuffer = calloc(MAXATOMS*s->boxes->nLocalBoxes,sizeof(int));
+   int numberOfAtoms = getPositionsAndIDs(s, s->boxes->nLocalBoxes,buffer,idBuffer);
+
+   //Sends number of atoms
+   // zmq_send(s->sender, (void *)&numberOfAtoms,sizeof(int), ZMQ_SNDMORE);   
+
+   //Sends positions of the atoms
+   zmq_send(s->sender, (void *)idBuffer, numberOfAtoms*sizeof(int), ZMQ_SNDMORE);
+   zmq_send(s->sender, (void *)buffer, numberOfAtoms*sizeof(real3), 0);
+   
    //Update number of bytes sent by this process
-   *sentData = *sentData + sizeof(int) + sizeof(int) + MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3)+ sizeof(long);
+   *sentData = *sentData + 2 * sizeof(int) + sizeof(long)  + numberOfAtoms * (sizeof(real3) + sizeof(int) ) ;
    kineticEnergy(s);
 
-   // printf("%d_%d @ %ld\n",s->rank,ts,time);
+   // Snippet to print the atom position in a file
+   // printf("%d_%d : %d Atoms.\n",s->rank,ts,numberOfAtoms );
+   // char filename[30];
+   // sprintf(filename, "/tmp/CoMD_%d", getMyRank());
+   // printf("File = %s\n",filename );
+   // FILE *f = fopen(filename,"a");
+   // for(int i=0,j=0 ; j<numberOfAtoms ; i=i+3 , j++)
+   // {
+   //    fprintf(f,"%lf , %lf , %lf\n",buffer[j][0],buffer[j][1],buffer[j][2] );
+   // }
+   // fclose(f);
+
+   free(buffer);
+   free(idBuffer);
 
    return s->ePotential;
 }
@@ -128,6 +157,28 @@ void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt)
          s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
       }
    }
+}
+
+//Copies the all the positions to buffer and the atom IDs to idBuffer 
+int getPositionsAndIDs(SimFlat* s, int nBoxes, real3* buffer, int* idBuffer)
+{
+  int numberOfAtoms = 0;
+   for (int iBox=0; iBox<nBoxes; iBox++)
+   {
+      for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
+      {
+        //The Id Buffer
+        idBuffer[numberOfAtoms]= s->atoms->gid[iOff];
+
+        //Get the position as floats for the position buffer
+        buffer[numberOfAtoms][0] = s->atoms->r[iOff][0];
+        buffer[numberOfAtoms][1] = s->atoms->r[iOff][1];
+        buffer[numberOfAtoms][2] = s->atoms->r[iOff][2];
+
+        numberOfAtoms++;
+      }
+   }
+   return numberOfAtoms;
 }
 
 /// Calculates total kinetic and potential energy across all tasks.  The
