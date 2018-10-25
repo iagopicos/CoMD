@@ -10,9 +10,12 @@
 
 #include "zhelpers.h"
 
+#include <time.h>
+#include <math.h>
+
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
 static void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt);
-
+static long get_current_time_in_ms (void);
 
 /// Advance the simulation time to t+dt using a leap frog method
 /// (equivalent to velocity verlet).
@@ -56,16 +59,41 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
       stopTimer(velocityTimer);
    }
 
-   // ZeroMQ send ids and positions
+   // ZeroMQ send ids, the current time in milis and the positions
    int ts = iStep + nSteps - 1;
+   long time = get_current_time_in_ms();
    zmq_send(s->sender, (void *)&(s->rank), sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&ts, sizeof(int), ZMQ_SNDMORE);
+   zmq_send(s->sender, (void *)&time, sizeof(long), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)s->atoms->r, MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3), 0);
    //Update number of bytes sent by this process
-   *sentData = *sentData + sizeof(int) + sizeof(int) + MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3);
+   *sentData = *sentData + sizeof(int) + sizeof(int) + MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3)+ sizeof(long);
    kineticEnergy(s);
 
+   // printf("%d_%d @ %ld\n",s->rank,ts,time);
+
    return s->ePotential;
+}
+
+
+static long get_current_time_in_ms (void)
+{
+    long            ms; // Milliseconds
+    time_t          s;  // Seconds
+    struct timespec spec;
+
+    clock_gettime(CLOCK_REALTIME, &spec);
+
+    s  = spec.tv_sec;
+    ms = round(spec.tv_nsec / 1.0e6); // Convert nanoseconds to milliseconds
+    if (ms > 999) {
+        s++;
+        ms = 0;
+    }
+
+    ms= ms + s*1.0e3;
+
+    return ms;
 }
 
 void computeForce(SimFlat* s)
