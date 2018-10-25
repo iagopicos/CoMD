@@ -83,8 +83,13 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
    zmq_send(s->sender, (void *)buffer, numberOfAtoms*sizeof(real3), 0);
    
    //Update number of bytes sent by this process
-   *sentData = *sentData + 2 * sizeof(int) + sizeof(long)  + numberOfAtoms * (sizeof(real3) + sizeof(int) ) ;
+   int messageSize = 2 * sizeof(int) + sizeof(long)  + numberOfAtoms * (sizeof(real3) + sizeof(int) );
+   *sentData = *sentData + messageSize  ;
    kineticEnergy(s);
+
+   if(getMyRank() == 0 && ts<=50 ){
+     printf("Rank %d message -> %lf MB\n", getMyRank(), messageSize*1.0/1024/1024);
+   }
 
    // Snippet to print the atom position in a file
    // printf("%d_%d : %d Atoms.\n",s->rank,ts,numberOfAtoms );
@@ -94,7 +99,8 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
    // FILE *f = fopen(filename,"a");
    // for(int i=0,j=0 ; j<numberOfAtoms ; i=i+3 , j++)
    // {
-   //    fprintf(f,"%lf , %lf , %lf\n",buffer[j][0],buffer[j][1],buffer[j][2] );
+   //    // fprintf(f,"%lf , %lf , %lf\n",buffer[j][0],buffer[j][1],buffer[j][2] );
+   //    fprintf(f,"%d\n",idBuffer[j] );
    // }
    // fclose(f);
 

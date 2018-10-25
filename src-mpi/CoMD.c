@@ -132,6 +132,13 @@ int main(int argc, char** argv)
       }
     }
 
+   //Print 0MQ version
+   if( getMyRank() == 0 ){      
+      int major, minor, patch;
+      zmq_version (&major, &minor, &patch);
+      printf ("Current ØMQ version is %d.%d.%d\n", major, minor, patch);
+   }
+   
    //Init ZMQ
    void *context = zmq_ctx_new();
    sim->sender = zmq_socket(context, ZMQ_PUSH);
@@ -183,7 +190,7 @@ int main(int argc, char** argv)
 
    logDataSizeSent(totalBytesSent);
 
-   printf("Terminating ZMQ context\n");
+   //printf("Terminating ZMQ context\n");
    zmq_close(sim->sender);
    zmq_ctx_term(context);
 
@@ -203,6 +210,7 @@ static void logDataSizeSent(long totalBytesSent){
    
    if(getMyRank() == 0)
    {
+      printf("Total MB sent: %lf \n",totalBytesSent*1.0/1024/1024);
       const char *homedir = getpwuid(getuid())->pw_dir;
       //Get home dir
       homedir = getpwuid(getuid())->pw_dir;
