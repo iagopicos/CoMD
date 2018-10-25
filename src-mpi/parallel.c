@@ -195,3 +195,24 @@ int builtWithMpi(void)
 }
 
 
+long reduceBytesSent(long* localBytesSent){
+#ifdef DO_MPI
+
+   long totalBytesSent=0;
+   MPI_Reduce(localBytesSent,
+       &totalBytesSent,
+       1,
+       MPI_LONG ,
+       MPI_SUM,
+       0,
+       MPI_COMM_WORLD);
+
+   return totalBytesSent;
+
+#else 
+
+   return *localBytesSent;
+
+#endif
+
+}

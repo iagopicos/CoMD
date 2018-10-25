@@ -62,5 +62,8 @@ void bcastParallel(void* buf, int len, int root);
 ///  Return non-zero if code was built with MPI active.
 int builtWithMpi(void);
 
+///Reduce the cumulators of the bytes sent by zmq
+long reduceBytesSent(long* localBytesSent);
+
 #endif
 

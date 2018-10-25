@@ -30,7 +30,7 @@ static void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt);
 /// the next call.
 ///
 /// After nSteps the kinetic energy is computed for diagnostic output.
-double timestep(SimFlat* s, int nSteps, int iStep, real_t dt)
+double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
 {
    for (int ii=0; ii<nSteps; ++ii)
    {
@@ -61,7 +61,8 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt)
    zmq_send(s->sender, (void *)&(s->rank), sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&ts, sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)s->atoms->r, MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3), 0);
-
+   //Update number of bytes sent by this process
+   *sentData = *sentData + sizeof(int) + sizeof(int) + MAXATOMS*s->boxes->nLocalBoxes*sizeof(real3);
    kineticEnergy(s);
 
    return s->ePotential;

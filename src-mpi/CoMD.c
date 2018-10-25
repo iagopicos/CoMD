@@ -65,6 +65,8 @@
 #include "helpers.h"
 #include "zhelpers.h"
 
+#include <pwd.h>
+
 #define REDIRECT_OUTPUT 0
 #define   MIN(A,B) ((A) < (B) ? (A) : (B))
 
@@ -84,6 +86,8 @@ static void sumAtoms(SimFlat* s);
 static void printThings(SimFlat* s, int iStep, double elapsedTime);
 static void printSimulationDataYaml(FILE* file, SimFlat* s);
 static void sanityChecks(Command cmd, double cutoff, double latticeConst, char latticeType[8]);
+
+static void logDataSizeSent(long totalBytesSent);
 
 
 int main(int argc, char** argv)
@@ -146,6 +150,7 @@ int main(int argc, char** argv)
    const int printRate = sim->printRate;
    int iStep = 0;
    //printf("Rank: %i\n", getMyRank());
+   long localBytesSent=0;
    profileStart(loopTimer);
    for (; iStep<nSteps;)
    {
@@ -156,7 +161,7 @@ int main(int argc, char** argv)
       printThings(sim, iStep, getElapsedTime(timestepTimer));
 
       startTimer(timestepTimer);
-      timestep(sim, printRate, iStep, sim->dt);
+      timestep(sim, printRate, iStep, sim->dt,&localBytesSent);
       stopTimer(timestepTimer);
 
       iStep += printRate;
@@ -174,10 +179,15 @@ int main(int argc, char** argv)
    printPerformanceResults(sim->atoms->nGlobal, sim->printRate);
    printPerformanceResultsYaml(yamlFile);
 
+   long totalBytesSent=reduceBytesSent(&localBytesSent);
+
+   logDataSizeSent(totalBytesSent);
+
    printf("Terminating ZMQ context\n");
    zmq_close(sim->sender);
    zmq_ctx_term(context);
 
+  
    destroySimulation(&sim);
    comdFree(validate);
    finalizeSubsystems();
@@ -187,6 +197,33 @@ int main(int argc, char** argv)
 
    return 0;
 }
+
+//Write the file containg the amout of data sent through ZMQ
+static void logDataSizeSent(long totalBytesSent){
+   
+   if(getMyRank() == 0)
+   {
+      const char *homedir = getpwuid(getuid())->pw_dir;
+      //Get home dir
+      homedir = getpwuid(getuid())->pw_dir;
+      char path[200];
+      
+      sprintf(path,"%s/%s",homedir,"CoMD_BytesSent.txt");
+
+      FILE *f = fopen(path, "w");
+
+      if (f == NULL)
+      {
+          printf("Error opening output file!\n");
+          exit(1);
+      }
+
+      fprintf(f, "%ld", totalBytesSent);
+      fclose(f);
+   }
+}
+
+
 
 /// Initialized the main CoMD data stucture, SimFlat, based on command
 /// line input from the user.  Also performs certain sanity checks on
