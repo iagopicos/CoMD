@@ -18,7 +18,7 @@ void dump_times(array_t data, char * filename) {
   }
 
   fprintf(f, "#Step Time\n");
-  for (int i = 0; i < kv_size(data); ++i)
+  for (unsigned int i = 0; i < kv_size(data); ++i)
     fprintf(f, "%d %f\n", i, kv_A(data,i));
 
   fclose(f);

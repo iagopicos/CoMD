@@ -63,7 +63,6 @@
 #include "constants.h"
 
 #include "helpers.h"
-#include "zhelpers.h"
 
 #include <pwd.h>
 
@@ -112,14 +111,14 @@ int main(int argc, char** argv)
    Validate* validate = initValidate(sim); // atom counts, energy
 
    int port = cmd.port + (getMyRank() % cmd.portNum);
-   char * server;
+   char *server = 0;
 
    unsigned int dir_length = 0;
    char ** dir_names = read_dir(cmd.hostDir, &dir_length);
    if(dir_names == NULL)
       exit(1);
 
-    for(int i = 0; i < dir_length - 1; ++i){
+    for(unsigned int i = 0; i < dir_length - 1; ++i){
       //printf("value of a: %s\n", dir_names[i]);
       if(atoi(dir_names[i]) == port){
         //if(server)
@@ -500,7 +499,7 @@ void printSimulationDataYaml(FILE* file, SimFlat* s)
 
    // Memory footprint diagnostics
    int perAtomSize = 10*sizeof(real_t)+2*sizeof(int);
-   float mbPerAtom = perAtomSize/1024/1024;
+   //float mbPerAtom = perAtomSize/1024/1024;
    float totalMemLocal = (float)(perAtomSize*s->atoms->nLocal)/1024/1024;
    float totalMemGlobal = (float)(perAtomSize*s->atoms->nGlobal)/1024/1024;
 

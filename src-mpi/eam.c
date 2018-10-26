@@ -304,7 +304,6 @@ int eamForce(SimFlat* s)
    // loop over all local boxes
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
-      int iOff;
       int nIBox =  s->boxes->nAtoms[iBox];
 
       // loop over atoms in iBox

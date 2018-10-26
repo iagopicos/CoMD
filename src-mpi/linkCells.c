@@ -75,7 +75,7 @@
 #define   MIN(A,B) ((A) < (B) ? (A) : (B))
 #define   MAX(A,B) ((A) > (B) ? (A) : (B))
 
-static void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int jBox);
+static void copyAtom(Atoms* atoms, int iAtom, int iBox, int jAtom, int jBox);
 static int getBoxFromCoord(LinkCell* boxes, real_t rr[3]);
 static void emptyHaloCells(LinkCell* boxes);
 static void getTuple(LinkCell* boxes, int iBox, int* ixp, int* iyp, int* izp);
@@ -243,14 +243,14 @@ int getBoxFromTuple(LinkCell* boxes, int ix, int iy, int iz)
 void moveAtom(LinkCell* boxes, Atoms* atoms, int iId, int iBox, int jBox)
 {
    int nj = boxes->nAtoms[jBox];
-   copyAtom(boxes, atoms, iId, iBox, nj, jBox);
+   copyAtom(atoms, iId, iBox, nj, jBox);
    boxes->nAtoms[jBox]++;
 
    assert(boxes->nAtoms[jBox] < MAXATOMS);
 
    boxes->nAtoms[iBox]--;
    int ni = boxes->nAtoms[iBox];
-   if (ni) copyAtom(boxes, atoms, ni, iBox, iId, iBox);
+   if (ni) copyAtom(atoms, ni, iBox, iId, iBox);
 
    if (jBox > boxes->nLocalBoxes)
       --atoms->nLocal;
@@ -309,7 +309,7 @@ int maxOccupancy(LinkCell* boxes)
 /// Copy atom iAtom in link cell iBox to atom jAtom in link cell jBox.
 /// Any data at jAtom, jBox is overwritten.  This routine can be used to
 /// re-order atoms within a link cell.
-void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int jBox)
+void copyAtom(Atoms* atoms, int iAtom, int iBox, int jAtom, int jBox)
 {
    const int iOff = MAXATOMS*iBox+iAtom;
    const int jOff = MAXATOMS*jBox+jAtom;

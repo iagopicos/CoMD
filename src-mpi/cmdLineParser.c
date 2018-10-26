@@ -30,7 +30,7 @@ typedef struct MyOptionSt
    void* next;
 } MyOption;
 
-static int longest = 1;
+static unsigned int longest = 1;
 static MyOption* myargs=NULL;
 
 static char* dupString(const char* s)

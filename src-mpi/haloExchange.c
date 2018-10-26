@@ -405,7 +405,6 @@ int loadAtomsBuffer(void* vparms, void* data, int face, char* charBuf)
 /// unloadBuffer parameters.
 void unloadAtomsBuffer(void* vparms, void* data, int face, int bufSize, char* charBuf)
 {
-   AtomExchangeParms* parms = (AtomExchangeParms*) vparms;
    SimFlat* s = (SimFlat*) data;
    AtomMsg* buf = (AtomMsg*) charBuf;
    int nBuf = bufSize / sizeof(AtomMsg);
@@ -577,7 +576,7 @@ void unloadForceBuffer(void* vparms, void* vdata, int face, int bufSize, char* c
    
    int nCells = parms->nCells[face];
    int* cellList = parms->recvCells[face];
-   int iBuf = 0;
+   unsigned int iBuf = 0;
    for (int iCell=0; iCell<nCells; ++iCell)
    {
       int iBox = cellList[iCell];

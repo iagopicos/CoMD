@@ -8,16 +8,15 @@
 #include "parallel.h"
 #include "performanceTimers.h"
 
-#include "zhelpers.h"
-
 #include <time.h>
 #include <math.h>
-
 #include <stdio.h>
-#include "parallel.h"
+#include <stdlib.h>
+#include <zmq.h>
+
 
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
-static void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt);
+static void advancePosition(SimFlat* s, int nBoxes, real_t dt);
 static long get_current_time_in_ms (void);
 
 /// Advance the simulation time to t+dt using a leap frog method
@@ -46,7 +45,7 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
       stopTimer(velocityTimer);
 
       startTimer(positionTimer);
-      advancePosition(s, s->boxes->nLocalBoxes, iStep, dt);
+      advancePosition(s, s->boxes->nLocalBoxes, dt);
       stopTimer(positionTimer);
 
       startTimer(redistributeTimer);
@@ -150,7 +149,7 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
    }
 }
 
-void advancePosition(SimFlat* s, int nBoxes, int iStep, real_t dt)
+void advancePosition(SimFlat* s, int nBoxes, real_t dt)
 {
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
