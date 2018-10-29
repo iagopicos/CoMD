@@ -206,10 +206,12 @@ Command parseCommandLine(int argc, char** argv)
    cmd.lat = -1.0;
    cmd.temperature = 600.0;
    cmd.initialDelta = 0.0;
+#ifdef DO_ZMQ
    cmd.port = 9000;
    cmd.portNum = 4;
    strcpy(cmd.hostDir,  "hosts");
    cmd.hwm = 100000;
+#endif
 
    int help=0;
    // add arguments for processing.  Please update the html documentation too!
@@ -230,10 +232,12 @@ Command parseCommandLine(int argc, char** argv)
    addArg("lat",        'l', 1, 'd',  &(cmd.lat),          0,             "lattice parameter (Angstroms)");
    addArg("temp",       'T', 1, 'd',  &(cmd.temperature),  0,             "initial temperature (K)");
    addArg("delta",      'r', 1, 'd',  &(cmd.initialDelta), 0,             "initial delta (Angstroms)");
+#ifdef DO_ZMQ
    addArg("portNum",    'P', 1, 'i',  &(cmd.portNum),      0,             "number of ports to use");
    addArg("port",       's', 1, 'i',  &(cmd.port),         0,             "starting port number");
    addArg("hostDir",    'H', 1, 's',  cmd.hostDir,   sizeof(cmd.hostDir), "host information directory");
    addArg("hwm",        'w', 1, 'i',  &(cmd.hwm),          0,             "max number of messages stored in memory (ZMQ_SNDHWM)");
+#endif
 
    processArgs(argc,argv);
 
@@ -279,10 +283,12 @@ void printCmdYaml(FILE* file, Command* cmd)
            "  Time step: %g fs\n"
            "  Initial Temperature: %g K\n"
            "  Initial Delta: %g Angstroms\n"
+#ifdef DO_ZMQ
            "  Number of Ports: %d\n"
            "  Initial Port Number: %d\n"
            "  Hostname Directory: %s\n"
            "  ZeroMQ ZMQ_SNDHWM: %d\n"
+#endif
            "\n",
            cmd->doeam,
            cmd->potDir,
@@ -295,11 +301,14 @@ void printCmdYaml(FILE* file, Command* cmd)
            cmd->printRate,
            cmd->dt,
            cmd->temperature,
-           cmd->initialDelta,
+           cmd->initialDelta
+#ifdef DO_ZMQ
+           ,
            cmd->portNum,
            cmd->port,
            cmd->hostDir,
            cmd->hwm
+#endif
    );
    fflush(file);
 }

@@ -12,7 +12,9 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <zmq.h>
+#ifdef DO_ZMQ
+#include "zmqstuff.h"
+#endif
 
 
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
@@ -35,8 +37,12 @@ static long get_current_time_in_ms (void);
 /// the next call.
 ///
 /// After nSteps the kinetic energy is computed for diagnostic output.
-double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
-{
+double timestep(SimFlat* s, int nSteps, real_t dt
+#ifdef DO_ZMQ
+                , int iStep, long* sentData
+#endif
+                )
+                {
    for (int ii=0; ii<nSteps; ++ii)
    {
 
@@ -61,13 +67,14 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
       stopTimer(velocityTimer);
    }
 
+#ifdef DO_ZMQ
    // ZeroMQ send ids, the current time in milis and the positions
    int ts = iStep + nSteps - 1;
    long time = get_current_time_in_ms();
+
    zmq_send(s->sender, (void *)&(s->rank), sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&ts, sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&time, sizeof(long), ZMQ_SNDMORE);
-
 
    //Prepare messages to send: the positions and the IDs
    real3* buffer = calloc(MAXATOMS*s->boxes->nLocalBoxes,sizeof(real3) * 3);
@@ -75,20 +82,15 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
    int numberOfAtoms = getPositionsAndIDs(s, s->boxes->nLocalBoxes,buffer,idBuffer);
 
    //Sends number of atoms
-   // zmq_send(s->sender, (void *)&numberOfAtoms,sizeof(int), ZMQ_SNDMORE);   
+   // zmq_send(s->sender, (void *)&numberOfAtoms,sizeof(int), ZMQ_SNDMORE);
 
    //Sends positions of the atoms
    zmq_send(s->sender, (void *)idBuffer, numberOfAtoms*sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)buffer, numberOfAtoms*sizeof(real3), 0);
-   
+
    //Update number of bytes sent by this process
    int messageSize = 2 * sizeof(int) + sizeof(long)  + numberOfAtoms * (sizeof(real3) + sizeof(int) );
-   *sentData = *sentData + messageSize  ;
-   kineticEnergy(s);
-
-   if(getMyRank() == 0 && ts<=50 ){
-     printf("Rank %d message -> %lf MB\n", getMyRank(), messageSize*1.0/1024/1024);
-   }
+                *sentData = *sentData + messageSize;
 
    // Snippet to print the atom position in a file
    // printf("%d_%d : %d Atoms.\n",s->rank,ts,numberOfAtoms );
@@ -103,8 +105,15 @@ double timestep(SimFlat* s, int nSteps, int iStep, real_t dt, long* sentData)
    // }
    // fclose(f);
 
+   if(getMyRank() == 0 && ts<=50 ){
+     printf("Rank %d message -> %lf MB\n", getMyRank(), messageSize*1.0/1024/1024);
+   }
+
    free(buffer);
    free(idBuffer);
+#endif
+
+   kineticEnergy(s);
 
    return s->ePotential;
 }

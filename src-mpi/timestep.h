@@ -6,7 +6,11 @@
 
 #include "CoMDTypes.h"
 
-double timestep(SimFlat* s, int n, int iStep, real_t dt, long* sentData);
+double timestep(SimFlat* s, int n, real_t dt
+#ifdef DO_ZMQ
+                , int iStep, long* sentData
+#endif
+                );
 void computeForce(SimFlat* s);
 void kineticEnergy(SimFlat* s);
 // int getPositionsAndIDs(SimFlat* s, int nBoxes, float* buffer, int* idBuffer);

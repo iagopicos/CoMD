@@ -9,6 +9,8 @@ SHELL = /bin/bash
 DOUBLE_PRECISION = ON
 # MPI for parallel (ON/OFF)
 DO_MPI = ON
+# Send data through ZeroMQ (ON/OFF)
+DO_ZMQ = OFF
 
 ### Set your desired C compiler and any necessary flags.  Note that CoMD
 ### uses some c99 features.  You can also set flags for optimization and
@@ -50,6 +52,8 @@ OTHER_INCLUDE =
 
 BIN_DIR=../bin
 
+SOURCES=$(wildcard *.c)
+
 # Check for double precision
 ifeq ($(DOUBLE_PRECISION), ON)
 CFLAGS += -DDOUBLE
@@ -65,13 +69,16 @@ INCLUDES += ${MPI_INCLUDE}
 CFLAGS += -DDO_MPI
 LDFLAGS += ${MPI_LIB}
 endif
+ifeq ($(DO_ZMQ), ON)
+CFLAGS += -DDO_ZMQ
+else
+SOURCES := $(filter-out zmqstuff.c, $(SOURCES))
+endif
 CoMD_EXE = ${BIN_DIR}/${CoMD_VARIANT}
 
 LDFLAGS += ${C_LIB} ${OTHER_LIB}
 CFLAGS  += ${OPTFLAGS} ${INCLUDES} ${OTHER_INCLUDE}
 
-
-SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
 
 
