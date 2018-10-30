@@ -69,3 +69,38 @@ What's New
 For information about what has changed in this version of CoMD, please
 consult the html documentation.
 
+
+ZMQ Add-on
+==========
+
+This version of CoMD was modified to generate a ZeroMQ data stream
+with the main results (basically, atom's id&position) obtained for
+each timestep (or a set of timesteps).
+
+This ZMQ support was only added to the MPI version. The compilation
+flag `DO_ZMQ=ON/OFF` enables/disables this option in the Makefile.
+
+When compiled with ZMQ support, some extra parameters are needed to set
+the hostname(s)/port(s) (`--help` to list them). Examples of use:
+
+- Serial execution with 256000 atoms (4 x 40 x 40 x 40) using ZMQ with
+  default port (9000):
+
+  ```bin/CoMD-serial --hostDir ~/tmp/ --nx 40 --ny 40 --nz 40```
+
+  With `--hostDir` we indicate the path where a file for each port used
+  sets the hostname (eg. localhost) for the ZMQ connection. In this example
+  this file is needed: ${HOME}/tmp/9000
+
+- 4 MPI processes using 4 different ZMQ ports:
+
+  ```mpirun -np 4 bin/CoMD-mpi --hostDir ~/tmp/ --nx 40 --ny 40 --nz 40 --xproc 2 --yproc 2 --zproc 1```
+
+  4 files in ${HOME}/tmp are needed:
+    ${HOME}/tmp/9000
+    ${HOME}/tmp/9001
+    ${HOME}/tmp/9002
+    ${HOME}/tmp/9003
+
+Credits for this add-on: Omar A. Mures, Henrique C. Zanúz, Bruno Raffin
+and Emilio J. Padrón
