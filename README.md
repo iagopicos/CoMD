@@ -14,8 +14,8 @@ code is intended to serve as a vehicle for co-design by allowing
 others to extend and/or reimplement it as needed to test performance of 
 new architectures, programming models, etc.
 
-To view the generated Doxygen documentation for CoMD, please visit
-<a href="http://exmatex.github.io/CoMD/doxygen-mpi/index.html">exmatex.github.io/CoMD/doxygen-mpi/index.html</a>.
+To view the generated Doxygen documentation for CoMD, please visit the site:
+<a href="http://ecp-copa.github.io/CoMD">http://ecp-copa.github.io/CoMD</a>.
 
 To contact the developers of CoMD send email to exmatex-comd@llnl.gov.
 
