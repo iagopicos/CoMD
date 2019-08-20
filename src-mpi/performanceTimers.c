@@ -195,7 +195,7 @@ void printPerformanceResultsYaml(FILE* file)
       if (perfTimer[ii].count > 0)
       {
          double totalTime = perfTimer[ii].total*tick;
-         fprintf(file, "  Timer: %s\n", timerName[ii]);
+         fprintf(file, "  - Timer: %s\n", timerName[ii]);
          fprintf(file, "    CallCount:  %"PRIu64"\n", perfTimer[ii].count);
          fprintf(file, "    AvgPerCall: %8.4f\n", totalTime/(double)perfTimer[ii].count);
          fprintf(file, "    Total:      %8.4f\n", totalTime);
@@ -208,7 +208,7 @@ void printPerformanceResultsYaml(FILE* file)
    {
       if (perfTimer[ii].count > 0)
       {
-         fprintf(file, "  Timer: %s\n", timerName[ii]);
+         fprintf(file, "  - Timer: %s\n", timerName[ii]);
          fprintf(file, "    MinRank: %d\n", perfTimer[ii].minRank);
          fprintf(file, "    MinTime: %8.4f\n", perfTimer[ii].minValue*tick);
          fprintf(file, "    MaxRank: %d\n", perfTimer[ii].maxRank);
