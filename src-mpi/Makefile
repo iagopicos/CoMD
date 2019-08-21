@@ -32,7 +32,8 @@ MPI_INCLUDE =
 
 ### A place to specify any other include or library switches your
 ### platform requires.
-OTHER_LIB = -lzmq
+ZMQ_LIB = -lzmq
+OTHER_LIB =
 OTHER_INCLUDE =
 
 
@@ -71,6 +72,7 @@ LDFLAGS += ${MPI_LIB}
 endif
 ifeq ($(DO_ZMQ), ON)
 CFLAGS += -DDO_ZMQ
+LDFLAGS += ${ZMQ_LIB}
 else
 SOURCES := $(filter-out zmqstuff.c, $(SOURCES))
 endif
