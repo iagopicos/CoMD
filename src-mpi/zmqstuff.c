@@ -6,7 +6,14 @@ void *initZmqStuff(Command *cmd, SimFlat *s)
   if (getMyRank() == 0) {
     int major, minor, patch;
     zmq_version(&major, &minor, &patch);
-    printf("Current ØMQ version is %d.%d.%d\n", major, minor, patch);
+    printf("Current ØMQ version is %d.%d.%d\n\n", major, minor, patch);
+
+#ifdef SINGLE
+    printf("Using SINGLE precision\n");
+#else
+    printf("Using DOUBLE precision\n");
+#endif
+    printf("Datatype sizes in this machine:\n\tInteger: %d bytes\n\tLong: %d bytes\n\tReal: %d bytes\n\tPointer: %d bytes\n\n", sizeof(int), sizeof(long), sizeof(real_t), sizeof(void *));
   }
 
   int port = cmd->port + (getMyRank() % cmd->portNum);
