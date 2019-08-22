@@ -89,25 +89,23 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    zmq_send(s->sender, (void *)buffer, numberOfAtoms*sizeof(real3), 0);
 
    //Update number of bytes sent by this process
-   int messageSize = 2 * sizeof(int) + sizeof(long)  + numberOfAtoms * (sizeof(real3) + sizeof(int) );
-                *sentData = *sentData + messageSize;
+   int messageSize = 2 * sizeof(int) + sizeof(long) + numberOfAtoms * (sizeof(real3) + sizeof(int));
+   *sentData = *sentData + messageSize;
 
    // Snippet to print the atom position in a file
-   // printf("%d_%d : %d Atoms.\n",s->rank,ts,numberOfAtoms );
+   // printf("%d_%d : %d Atoms.\n", s->rank, ts, numberOfAtoms);
    // char filename[30];
    // sprintf(filename, "/tmp/CoMD_%d", getMyRank());
-   // printf("File = %s\n",filename );
-   // FILE *f = fopen(filename,"a");
-   // for(int i=0,j=0 ; j<numberOfAtoms ; i=i+3 , j++)
+   // printf("File = %s\n", filename);
+   // FILE *f = fopen(filename, "a");
+   // for(int i=0, j=0; j<numberOfAtoms; i=i+3, j++)
    // {
-   //    // fprintf(f,"%lf , %lf , %lf\n",buffer[j][0],buffer[j][1],buffer[j][2] );
-   //    fprintf(f,"%d\n",idBuffer[j] );
+   //    // fprintf(f, "%lf , %lf, %lf\n", buffer[j][0], buffer[j][1], buffer[j][2]);
+   //    fprintf(f, "%d\n", idBuffer[j]);
    // }
    // fclose(f);
 
-   if(getMyRank() == 0 && ts<=50 ){
-     printf("Rank %d message -> %lf MB\n", getMyRank(), messageSize*1.0/1024/1024);
-   }
+   // printf("Rank %d: Message %d -> %d atoms - %lf MB\n", s->rank, ts, numberOfAtoms, messageSize*1.0/1024/1024);
 
    free(buffer);
    free(idBuffer);

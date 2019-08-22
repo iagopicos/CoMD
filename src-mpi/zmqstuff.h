@@ -1,6 +1,7 @@
 #ifndef __ZMQSTUFF_H_
 #define __ZMQSTUFF_H_
 
+#include <math.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>

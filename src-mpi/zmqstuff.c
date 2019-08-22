@@ -14,6 +14,10 @@ void *initZmqStuff(Command *cmd, SimFlat *s)
     printf("Using DOUBLE precision\n");
 #endif
     printf("Datatype sizes in this machine:\n\tInteger: %d bytes\n\tLong: %d bytes\n\tReal: %d bytes\n\tPointer: %d bytes\n\n", sizeof(int), sizeof(long), sizeof(real_t), sizeof(void *));
+    int nmsgs = (int)ceilf((float)s->nSteps/s->printRate);
+    real_t msgsize = (2 * sizeof(int) + sizeof(long) + s->atoms->nLocal * (sizeof(real3) + sizeof(int)))*1.0/1024/1024;
+    printf("ZMQ comm. in this run: %d messages from each rank, %f MB/msg => %f MB per rank\n\n", nmsgs, msgsize, nmsgs * msgsize);
+    printf("ZMQ Messages format:\n  MPIrank  msgid(ts)  timestamp  id[#local_atoms_in_rank]  locations[#local_atoms_in_rank]\n      int        int       long        #local_atoms x int          #local_atoms x 3 x real\n  %d bytes    %d bytes    %d bytes    %12d x %d bytes       %12d x 3 x %d bytes\n\n", sizeof(int), sizeof(int), sizeof(long), s->atoms->nLocal, sizeof(int), s->atoms->nLocal, sizeof(real_t));
   }
 
   int port = cmd->port + (getMyRank() % cmd->portNum);
