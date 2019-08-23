@@ -13,6 +13,6 @@
 
 void *initZmqStuff(Command *cmd, SimFlat *s);
 void closeZmqStuff(void *context, SimFlat *s);
-void logDataSizeSent(long totalBytesSent);
+void logDataSizeSent(long totalBytesSent, long miliseconds);
 
 #endif

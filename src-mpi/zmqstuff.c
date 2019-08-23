@@ -61,10 +61,11 @@ void closeZmqStuff(void *context, SimFlat *s)
 }
 
 //Write the file containg the amout of data sent through ZMQ
-void logDataSizeSent(long totalBytesSent)
+void logDataSizeSent(long totalBytesSent, long miliseconds)
 {
   if(getMyRank() == 0) {
-    printf("Total MB sent: %lf \n",totalBytesSent*1.0/1024/1024);
+    printf("Total MiB sent: %lf \n",totalBytesSent*1.0/1024/1024);
+    printf("Avg. rate: %lf MB/s\n\n",(totalBytesSent*1.0/1000)/miliseconds);
     const char *homedir = getpwuid(getuid())->pw_dir;
     //Get home dir
     homedir = getpwuid(getuid())->pw_dir;

@@ -19,7 +19,6 @@
 
 static void advanceVelocity(SimFlat* s, int nBoxes, real_t dt);
 static void advancePosition(SimFlat* s, int nBoxes, real_t dt);
-static long get_current_time_in_ms (void);
 
 /// Advance the simulation time to t+dt using a leap frog method
 /// (equivalent to velocity verlet).
@@ -39,7 +38,7 @@ static long get_current_time_in_ms (void);
 /// After nSteps the kinetic energy is computed for diagnostic output.
 double timestep(SimFlat* s, int nSteps, real_t dt
 #ifdef DO_ZMQ
-                , int iStep, long* sentData
+                , int iStep, long* sentData, long *timeprev
 #endif
                 )
                 {
@@ -71,6 +70,7 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    // ZeroMQ send ids, the current time in milis and the positions
    int ts = iStep + nSteps - 1;
    long time = get_current_time_in_ms();
+   int period;
 
    zmq_send(s->sender, (void *)&(s->rank), sizeof(int), ZMQ_SNDMORE);
    zmq_send(s->sender, (void *)&ts, sizeof(int), ZMQ_SNDMORE);
@@ -105,7 +105,18 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    // }
    // fclose(f);
 
-   // printf("Rank %d: Message %d -> %d atoms - %lf MB\n", s->rank, ts, numberOfAtoms, messageSize*1.0/1024/1024);
+   if (*timeprev != 0) {
+     // Time from previous delivery
+     period = time - *timeprev;
+
+     // Output info about msg rate
+
+     printf("Rank %d: Message %d -> %d atoms (%lf MiB) - %ld ms from prev (%lf MB/s)\n", s->rank, ts, numberOfAtoms, messageSize*1.0/1024/1024, period, (messageSize*1.0/1000) / period);
+   } else {
+     printf("Rank %d: Message %d -> %d atoms (%lf MiB)\n", s->rank, ts, numberOfAtoms, messageSize*1.0/1024/1024);
+   }
+
+   *timeprev = time;
 
    free(buffer);
    free(idBuffer);
@@ -117,7 +128,7 @@ double timestep(SimFlat* s, int nSteps, real_t dt
 }
 
 
-static long get_current_time_in_ms (void)
+long get_current_time_in_ms (void)
 {
     long            ms; // Milliseconds
     time_t          s;  // Seconds

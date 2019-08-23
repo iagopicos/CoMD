@@ -23,7 +23,7 @@ int getMyRank(void);
 int printRank(void);
 
 /// Print a timestamp and message when all tasks arrive.
-void timestampBarrier(const char* msg);
+long timestampBarrier(const char* msg);
 
 /// Wrapper for MPI_Init.
 void initParallel(int *argc, char ***argv);

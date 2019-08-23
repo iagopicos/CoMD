@@ -6,6 +6,7 @@
 /// equivalent single task behavior.
 
 #include "parallel.h"
+#include "timestep.h"
 
 #ifdef DO_MPI
 #include <mpi.h>
@@ -33,7 +34,7 @@ int getNRanks()
    return nRanks;
 }
 
-int getMyRank()   
+int getMyRank()
 {
    return myRank;
 }
@@ -48,16 +49,22 @@ int printRank()
    return 0;
 }
 
-void timestampBarrier(const char* msg)
+long timestampBarrier(const char* msg)
 {
    barrierParallel();
+
+   long timestamp = get_current_time_in_ms();
+
    if (! printRank())
-      return;
+      return timestamp;
+
    time_t t= time(NULL);
    char* timeString = ctime(&t);
    timeString[24] = '\0'; // clobber newline
    fprintf(screenOut, "%s: %s\n", timeString, msg);
    fflush(screenOut);
+
+   return timestamp;
 }
 
 void initParallel(int* argc, char*** argv)

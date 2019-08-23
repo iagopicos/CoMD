@@ -8,7 +8,7 @@
 
 double timestep(SimFlat* s, int n, real_t dt
 #ifdef DO_ZMQ
-                , int iStep, long* sentData
+                , int iStep, long* sentData, long *timeprev
 #endif
                 );
 void computeForce(SimFlat* s);
@@ -18,5 +18,7 @@ int getPositionsAndIDs(SimFlat* s, int nBoxes, real3* buffer, int* idBuffer);
 
 /// Update local and remote link cells after atoms have moved.
 void redistributeAtoms(struct SimFlatSt* sim);
+
+long get_current_time_in_ms (void);
 
 #endif

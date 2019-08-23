@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 
    timestampBarrier("Initialization Finished\n");
 
-   timestampBarrier("Starting simulation\n");
+   long initSimul = timestampBarrier("Starting simulation\n");
 
    // This is the CoMD main loop
    const int nSteps = sim->nSteps;
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
    int iStep = 0;
    //printf("Rank: %i\n", getMyRank());
 #ifdef DO_ZMQ
-   long localBytesSent=0;
+   long localBytesSent=0, timestamp=0;
 #endif
    profileStart(loopTimer);
    for (; iStep<nSteps;)
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
 
       timestep(sim, printRate, sim->dt
 #ifdef DO_ZMQ
-               , iStep, &localBytesSent
+               , iStep, &localBytesSent, &timestamp
 #endif
                );
       stopTimer(timestepTimer);
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 
    sumAtoms(sim);
    printThings(sim, iStep, getElapsedTime(timestepTimer));
-   timestampBarrier("Ending simulation\n");
+   long endSimul = timestampBarrier("Ending simulation\n");
 
    // Epilog
    validateResult(validate, sim);
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 #ifdef DO_ZMQ
    long totalBytesSent = reduceBytesSent(&localBytesSent);
 
-   logDataSizeSent(totalBytesSent);
+   logDataSizeSent(totalBytesSent, endSimul - initSimul);
 
    closeZmqStuff(context, sim);
 #endif
