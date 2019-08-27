@@ -64,8 +64,8 @@ void closeZmqStuff(void *context, SimFlat *s)
 void logDataSizeSent(long totalBytesSent, long miliseconds)
 {
   if(getMyRank() == 0) {
-    printf("Total MiB sent: %lf \n",totalBytesSent*1.0/1024/1024);
-    printf("Avg. rate: %lf MB/s\n\n",(totalBytesSent*1.0/1000)/miliseconds);
+    printf("Total MiB sent: %.2lf MiB (in %.2f seconds)\n",totalBytesSent*1.0/1024/1024, miliseconds/1000.0);
+    printf("Avg. rate: %.2lf MB/s\n\n",(totalBytesSent*1.0/1000)/miliseconds);
     const char *homedir = getpwuid(getuid())->pw_dir;
     //Get home dir
     homedir = getpwuid(getuid())->pw_dir;
