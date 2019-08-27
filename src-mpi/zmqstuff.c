@@ -37,7 +37,7 @@ void *initZmqStuff(Command *cmd, SimFlat *s)
       if (server == NULL)
         exit(1);
       check_hostname(server);
-      printf("Hostname found! It is: %s\n", server);
+      //printf("Hostname found! It is: %s\n", server);
     }
   }
 
@@ -47,7 +47,7 @@ void *initZmqStuff(Command *cmd, SimFlat *s)
   zmq_setsockopt(s->sender, ZMQ_SNDHWM, &(cmd->hwm), sizeof(cmd->hwm));
   char connect[MAX_CHARS_KEY];
   sprintf(connect, "tcp://%s:%d", server, port);
-  printf("%s\n", connect);
+  printf("MPI Rank %d/%d - ZMQ recipient: %s\n", getMyRank(), getNRanks(), connect);
   zmq_connect(s->sender, connect);
 
   return (context);

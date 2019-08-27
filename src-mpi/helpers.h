@@ -21,12 +21,11 @@ float min(array_t data);
 void dump_times(array_t data, char * filename);
 void dump_stats(array_t data, char * filename);
 
+#ifdef DO_ZMQ
 void check_hostname(char * read_hostname);
-
 char * read_hostname(char * path, char * file);
-
 char ** read_dir(char * path, unsigned int * length);
-
 char * rand_string_alloc(size_t size);
+#endif
 
 #endif // HELPERS_H_

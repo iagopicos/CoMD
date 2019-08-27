@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <sys/types.h>
 
@@ -83,12 +82,15 @@ float min(array_t data) {
 
 }
 
+#ifdef DO_ZMQ
+#include <unistd.h>
+
 void check_hostname(char * read_hostname){
 
   char hostname[MAX_CHARS_HOSTNAME];
   hostname[MAX_CHARS_HOSTNAME - 1] = '\0';
   gethostname(hostname, MAX_CHARS_HOSTNAME - 1);
-  printf("Hostname: %s\n", hostname);
+  // printf("Hostname: %s\n", hostname);
 
   //TODO This is not good, it can overwrite mem
   //since read_hostname is allocated elsewhere
@@ -176,3 +178,4 @@ char* rand_string_alloc(size_t size) {
   }
   return s;
 }
+#endif
