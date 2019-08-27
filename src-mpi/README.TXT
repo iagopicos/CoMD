@@ -81,7 +81,7 @@ This ZMQ support was only added to the MPI version. The compilation
 flag `DO_ZMQ=ON/OFF` enables/disables this option in the Makefile.
 
 When compiled with ZMQ support, some extra parameters are needed to set
-the hostname(s)/port(s) (`--help` to list them). Examples of use:
+the recipient's hostname(s)/port(s) (`--help` to list them). Examples of use:
 
 - Serial execution with 256000 atoms (4 x 40 x 40 x 40) using ZMQ with
   default port (9000):
@@ -89,8 +89,14 @@ the hostname(s)/port(s) (`--help` to list them). Examples of use:
   ```bin/CoMD-serial --hostDir ~/tmp/ --nx 40 --ny 40 --nz 40```
 
   With `--hostDir` we indicate the path where a file for each port used
-  sets the hostname (eg. localhost) for the ZMQ connection. In this example
+  sets the destination hostname (eg. ) for the ZMQ connection. In this example
   this file is needed: ${HOME}/tmp/9000
+
+  ```
+     cat ~/tmp/9000
+
+     dahu-7.grenoble.grid5000.fr
+  ```
 
 - 4 MPI processes using 4 different ZMQ ports:
 
