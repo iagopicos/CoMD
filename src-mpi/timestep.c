@@ -105,7 +105,9 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    // }
    // fclose(f);
 
-   if (*timeprev != 0) {
+   // DBG info about sent msgs
+   /*
+     if (*timeprev != 0) {
      // Time from previous delivery
      period = time - *timeprev;
 
@@ -117,6 +119,7 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    }
 
    *timeprev = time;
+   */
 
    free(buffer);
    free(idBuffer);
