@@ -6,6 +6,8 @@
 
 #include "mytype.h"
 
+#define MAX_CHARS_HOSTNAME 1024
+
 /// Structure for use with MPI_MINLOC and MPI_MAXLOC operations.
 typedef struct RankReduceDataSt
 {
@@ -21,6 +23,9 @@ int getMyRank(void);
 
 /// Return non-zero if printing occurs from this rank.
 int printRank(void);
+
+/// Return local hostname
+char *getMyHostname(void);
 
 /// Print a timestamp and message when all tasks arrive.
 long timestampBarrier(const char* msg);

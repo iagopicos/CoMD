@@ -7,6 +7,7 @@
 #include <sys/types.h>
 
 #include "helpers.h"
+#include "parallel.h"
 
 void dump_times(array_t data, char * filename) {
 
@@ -83,18 +84,13 @@ float min(array_t data) {
 }
 
 #ifdef DO_ZMQ
-#include <unistd.h>
-
 void check_hostname(char * read_hostname){
 
-  char hostname[MAX_CHARS_HOSTNAME];
-  hostname[MAX_CHARS_HOSTNAME - 1] = '\0';
-  gethostname(hostname, MAX_CHARS_HOSTNAME - 1);
-  // printf("Hostname: %s\n", hostname);
+  //printf("Hostname: %s\n", getMyHostname());
 
   //TODO This is not good, it can overwrite mem
   //since read_hostname is allocated elsewhere
-  if(!strcmp(read_hostname,hostname))
+  if (!strcmp(read_hostname, getMyHostname()))
     strcpy(read_hostname, "127.0.0.1");
 
 }

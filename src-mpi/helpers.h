@@ -6,7 +6,6 @@
 
 #define MAX_CHARS_KEY 1000
 #define MAX_MESSAGE_SIZE 2048 //2 KB
-#define MAX_CHARS_HOSTNAME 1024
 
 #define START_TIMING(t) clock_t t = clock()
 #define END_TIMING(t) (float)(clock() - t) / CLOCKS_PER_SEC

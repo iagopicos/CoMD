@@ -10,6 +10,7 @@
 
 #ifdef DO_MPI
 #include <mpi.h>
+#include <unistd.h>
 #endif
 
 #include <stdio.h>
@@ -17,6 +18,7 @@
 #include <string.h>
 #include <assert.h>
 
+static char myhostname[MAX_CHARS_HOSTNAME];
 static int myRank = 0;
 static int nRanks = 1;
 
@@ -49,6 +51,11 @@ int printRank()
    return 0;
 }
 
+char *getMyHostname()
+{
+   return myhostname;
+}
+
 long timestampBarrier(const char* msg)
 {
    barrierParallel();
@@ -73,6 +80,9 @@ void initParallel(int* argc, char*** argv)
    MPI_Init(argc, argv);
    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
    MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
+
+   gethostname(myhostname, MAX_CHARS_HOSTNAME - 1);
+   myhostname[MAX_CHARS_HOSTNAME - 1] = '\0';
 #endif
 }
 
