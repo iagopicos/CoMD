@@ -10,7 +10,7 @@ DOUBLE_PRECISION = ON
 # MPI for parallel (ON/OFF)
 DO_MPI = ON
 # Send data through ZeroMQ (ON/OFF)
-DO_ZMQ = OFF
+DO_ZMQ = ON
 
 ### Set your desired C compiler and any necessary flags.  Note that CoMD
 ### uses some c99 features.  You can also set flags for optimization and
