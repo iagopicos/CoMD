@@ -19,3 +19,13 @@
 # Doxygen directories
 src-mpi/html
 src-mpi/latex
+
+#yaml putput files
+*.yaml
+
+#executable
+bin/
+
+#other files
+src-mpi/.depend
+src-mpi/CoMD_info.h
