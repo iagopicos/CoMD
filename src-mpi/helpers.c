@@ -86,11 +86,11 @@ float min(array_t data) {
 #ifdef DO_ZMQ
 void check_hostname(char * read_hostname){
 
-  //printf("Hostname: %s\n", getMyHostname());
+  printf("Hostname: %s\n", getMyHostname());
 
   //TODO This is not good, it can overwrite mem
   //since read_hostname is allocated elsewhere
-  if (!strcmp(read_hostname, getMyHostname()))
+ // if (!strcmp(read_hostname, getMyHostname()))
     strcpy(read_hostname, "127.0.0.1");
 
 }

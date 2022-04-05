@@ -46,7 +46,7 @@ void *initZmqStuff(Command *cmd, SimFlat *s)
   s->sender = zmq_socket(context, ZMQ_PUSH);
   zmq_setsockopt(s->sender, ZMQ_SNDHWM, &(cmd->hwm), sizeof(cmd->hwm));
   char connect[MAX_CHARS_KEY];
-  sprintf(connect, "tcp://%s:%d", "localhost", port);
+  sprintf(connect, "tcp://%s:%d", server, port);
   printf("Hostname: %s - MPI Rank %d/%d - ZMQ recipient: %s\n", getMyHostname(), getMyRank(), getNRanks(), connect);
   //zmq_connect(s->sender, connect);
   zmq_bind(s->sender,connect);
