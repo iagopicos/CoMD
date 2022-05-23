@@ -66,4 +66,8 @@ void printPerformanceResults(int nGlobalAtoms, int printRate);
 
 /// Print timing results to Yaml file
 void printPerformanceResultsYaml(FILE* file);
+
+/// Print timing results sendet to ZMQ into CSV file
+void printfToCSV(FILE* file,int rank, int ts, long time, float idBuffer,float buffer);
+
 #endif

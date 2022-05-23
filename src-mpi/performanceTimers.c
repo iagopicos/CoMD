@@ -307,3 +307,7 @@ void timerStats(void)
       perfTimer[ii].stdev = sqrt(recvBuf[ii] / (double) getNRanks());
    }
 }
+void printfToCSV(FILE* file,int rank, int ts, long time, float idBuffer,float buffer){
+   fprintf(file,"Rank,ts,time,idBuffer,Buffer");
+   fprintf(file,"%d,%d,%ld,%6.2f,%6.2f",rank,ts,time,idBuffer,buffer);
+}
