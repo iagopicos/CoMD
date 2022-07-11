@@ -29,3 +29,4 @@ bin/
 #other files
 src-mpi/.depend
 src-mpi/CoMD_info.h
+.vscode/
