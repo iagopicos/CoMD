@@ -80,7 +80,7 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    real3* buffer = calloc(MAXATOMS*s->boxes->nLocalBoxes,sizeof(real3) * 3);
    int* idBuffer = calloc(MAXATOMS*s->boxes->nLocalBoxes,sizeof(int));
    int numberOfAtoms = getPositionsAndIDs(s, s->boxes->nLocalBoxes,buffer,idBuffer);
-
+   int numberOfMsgs = 0;
    //Sends number of atoms
    // zmq_send(s->sender, (void *)&numberOfAtoms,sizeof(int), ZMQ_SNDMORE);
 
@@ -92,26 +92,26 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    int messageSize = 2 * sizeof(int) + sizeof(long) + numberOfAtoms * (sizeof(real3) + sizeof(int));
    *sentData = *sentData + messageSize;
 
-   // Snippet to print the atom position in a file
-   // printf("%d_%d : %d Atoms.\n", s->rank, ts, numberOfAtoms);
-   // char filename[30];
-   // sprintf(filename, "/tmp/CoMD_%d", getMyRank());
-   // printf("File = %s\n", filename);
-   // FILE *f = fopen(filename, "a");
-   // for(int i=0, j=0; j<numberOfAtoms; i=i+3, j++)
-   // {
-   //    // fprintf(f, "%lf , %lf, %lf\n", buffer[j][0], buffer[j][1], buffer[j][2]);
-   //    fprintf(f, "%d\n", idBuffer[j]);
-   // }
-   // fclose(f);
+   //Snippet to print the atom position in a file
+   printf("%d_%d : %d Atoms.\n", s->rank, ts, numberOfAtoms);
+   char filename[30];
+   sprintf(filename, "/tmp/CoMD_%d", getMyRank());
+   printf("File = %s\n", filename);
+   FILE *f = fopen(filename, "a");
+   for(int i=0, j=0; j<numberOfAtoms; i=i+3, j++)
+   {
+      fprintf(f, "%lf , %lf, %lf\n", buffer[j][0], buffer[j][1], buffer[j][2]);
+      fprintf(f, "%d\n", idBuffer[j]);
+   }
+   fclose(f);
 
-   // DBG info about sent msgs
-   /*
+   //DBG info about sent msgs
+   
      if (*timeprev != 0) {
-     // Time from previous delivery
+     //Time from previous delivery
      period = time - *timeprev;
 
-     // Output info about msg rate
+     //Output info about msg rate
 
      printf("Rank %d: Message %d -> %d atoms (%lf MiB) - %ld ms from prev (%lf MB/s)\n", s->rank, ts, numberOfAtoms, messageSize*1.0/1024/1024, period, (messageSize*1.0/1000) / period);
    } else {
@@ -119,7 +119,6 @@ double timestep(SimFlat* s, int nSteps, real_t dt
    }
 
    *timeprev = time;
-   */
 
    free(buffer);
    free(idBuffer);
